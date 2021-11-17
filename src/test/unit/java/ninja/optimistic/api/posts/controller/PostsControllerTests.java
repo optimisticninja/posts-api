@@ -49,7 +49,7 @@ public class PostsControllerTests {
 
   private final ninja.optimistic.api.posts.model.Post POST =
       ninja.optimistic.api.posts.model.Post.builder()
-          .authorId("auth0|test")
+          .authorId("auth0|user")
           .id(UUID.randomUUID())
           .created(OffsetDateTime.now(ZoneOffset.UTC))
           .updated(OffsetDateTime.now(ZoneOffset.UTC))
@@ -60,7 +60,7 @@ public class PostsControllerTests {
           .build();
 
   @Test
-  @WithMockUser(authorities = "SCOPE_post:g:w")
+  @WithMockUser(authorities = "SCOPE_posts:g:w")
   void givenAdmin_whenCreatePost_thenSuccessfullyCreated() {
     var createPostRequest =
         CreatePostRequest.builder()
@@ -69,7 +69,7 @@ public class PostsControllerTests {
             .markdown(POST.getMarkdown())
             .imageUrl(POST.getImageUrl())
             .build();
-    when(repository.save(any())).thenReturn(Mono.just(POST));
+    when(service.createPost(createPostRequest)).thenReturn(Mono.just(POST));
     client
         .mutateWith(csrf())
         .post()
@@ -81,11 +81,11 @@ public class PostsControllerTests {
         .isCreated()
         .expectHeader()
         .location("/v1/posts/" + POST.getId());
-    verify(repository, times(1)).save(any());
+    verify(service, times(1)).createPost(createPostRequest);
   }
 
   @Test
-  @WithMockUser(authorities = "SCOPE_post:l:w")
+  @WithMockUser(authorities = "SCOPE_posts:l:w")
   void givenCreator_whenCreatePost_thenSuccessfullyCreated() {
     var createPostRequest =
         CreatePostRequest.builder()
@@ -94,7 +94,7 @@ public class PostsControllerTests {
             .markdown(POST.getMarkdown())
             .imageUrl(POST.getImageUrl())
             .build();
-    when(repository.save(any())).thenReturn(Mono.just(POST));
+    when(service.createPost(createPostRequest)).thenReturn(Mono.just(POST));
     client
         .mutateWith(csrf())
         .post()
@@ -106,7 +106,7 @@ public class PostsControllerTests {
         .isCreated()
         .expectHeader()
         .location("/v1/posts/" + POST.getId());
-    verify(repository, times(1)).save(any());
+    verify(service, times(1)).createPost(createPostRequest);
   }
 
   @Test
@@ -243,7 +243,7 @@ public class PostsControllerTests {
   }
 
   @Test
-  @WithMockUser(authorities = "SCOPE_posts:g:w")
+  @WithMockUser(value = "user", authorities = "SCOPE_posts:g:w")
   void givenAdmin_whenUpdatePost_thenSuccessfullyUpdated() {
     var myPost = POST.toBuilder().authorId("user").build();
     var id = myPost.getId();
@@ -276,6 +276,7 @@ public class PostsControllerTests {
             .markdown("updated")
             .updateMask(Collections.singletonList(PostUpdateMask.MARKDOWN))
             .build();
+    when(repository.findById(id)).thenReturn(Mono.just(POST));
     when(service.updatePost(id, updatePostRequest))
         .thenReturn(Mono.just(POST.toBuilder().markdown("updated").build()));
     client
@@ -287,7 +288,7 @@ public class PostsControllerTests {
         .expectStatus()
         .isForbidden();
     verify(service, times(0)).updatePost(id, updatePostRequest);
-    verify(repository, times(0)).findById(id);
+    verify(repository, times(1)).findById(id);
     verify(repository, times(0)).delete(POST);
   }
 

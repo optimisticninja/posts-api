@@ -297,6 +297,6 @@ tasks.openApiGenerate.dependsOn tasks.clean
 tasks.check.dependsOn tasks.smokeTest
 tasks.smokeTest.dependsOn tasks.spotlessGroovyApply
 tasks.spotlessJava.dependsOn tasks.openApiGenerate
-tasks.jacocoTestReport.dependsOn tasks.test, tasks.smokeTest
+tasks.jacocoTestReport.dependsOn tasks.test
 tasks.test.finalizedBy jacocoTestReport
 tasks.smokeTest.finalizedBy jacocoTestReport

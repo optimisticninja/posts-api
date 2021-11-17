@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
@@ -23,7 +23,7 @@ import org.springframework.web.server.session.WebSessionManager;
 import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
-@EnableReactiveMethodSecurity
+@EnableReactiveMethodSecurity(proxyTargetClass = true)
 @Slf4j
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -71,8 +71,8 @@ public class SecurityConfig {
     return (swe, e) -> {
       var name = swe.getPrincipal().map(Principal::getName);
       return swe.getPrincipal()
-          .cast(JwtAuthenticationToken.class)
-          .map(JwtAuthenticationToken::getAuthorities)
+          .cast(AbstractAuthenticationToken.class)
+          .map(AbstractAuthenticationToken::getAuthorities)
           .map(
               grantedAuthorities ->
                   grantedAuthorities.stream()
