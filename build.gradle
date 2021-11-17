@@ -1,0 +1,302 @@
+plugins {
+  id 'org.springframework.boot' version '2.5.6'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  id "org.openapi.generator" version "5.3.0"
+  id "com.diffplug.spotless" version "5.17.1"
+  id "com.avast.gradle.docker-compose" version "0.14.9"
+  id 'java'
+  id 'groovy'
+  id 'jacoco'
+  id 'idea'
+}
+
+group = 'ninja.optimistic.api'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+configurations {
+  compileOnly.extendsFrom annotationProcessor
+  smokeImplementation.extendsFrom compile
+}
+
+ext {
+  // Source-set directories
+  openapiSrcDir = "$rootDir/src/main/openapi"
+  openapiGeneratedDir = "${openapiSrcDir}/generated"
+  unitTestSrcDir = "$rootDir/src/test/unit/java"
+  unitTestResourcesDir = "$rootDir/src/test/unit/resources"
+  smokeSrcDir = "$rootDir/src/test/smoke/groovy"
+
+  // SCM information
+  name = "John Holly"
+  domain = "optimistic.ninja"
+  email = "j@${domain}".toString()
+  url = "https://${domain}".toString()
+  gitlabUser = "optimisticninja"
+  gitlabUrl = "https://gitlab.com/${gitlabUser}/${project.name}".toString()
+  projectDescription = "Users API for ${domain}".toString()
+  gitlabConnection = "scm:git:git@gitlab.com:${gitlabUser}/${project.name}.git".toString()
+
+  // OpenAPI Generator variables
+  openapiSpec = "$openapiSrcDir/v1-openapi.yml"
+  generatedPackage = "${project.group}.posts.generated".toString()
+  generatedApiPackage = "${generatedPackage}.controller".toString()
+  generatedModelPackage = "${generatedPackage}.model".toString()
+  generatedConfigPackage = "${generatedPackage}.config".toString()
+  generatedAdditionalModelTypeAnnotations = "@lombok.Builder(toBuilder = true) @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
+
+  // JaCoCo
+  jacocoExcludes = [
+    "**/generated/**",
+    "**/model/**"
+  ]
+}
+
+sourceSets {
+  openapi {
+    resources {
+      srcDir openapiSrcDir
+    }
+  }
+
+  main {
+    java {
+      srcDir openapiGeneratedDir
+    }
+  }
+
+  test {
+    java {
+      srcDir unitTestSrcDir
+    }
+
+    compileClasspath += sourceSets.main.compileClasspath
+    runtimeClasspath += sourceSets.main.runtimeClasspath
+  }
+
+  smoke {
+    groovy {
+      srcDir smokeSrcDir
+    }
+
+    compileClasspath += sourceSets.test.compileClasspath
+    runtimeClasspath += sourceSets.test.runtimeClasspath
+  }
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+dependencyManagement {
+  imports {
+    mavenBom 'org.testcontainers:testcontainers-bom:1.16.0'
+  }
+
+  dependencies {
+    dependency group: 'io.swagger', name: 'swagger-annotations', version: '1.5.14'
+    dependency group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    dependency group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.1'
+    dependency group: 'io.springfox', name: 'springfox-swagger-common', version: '3.0.0'
+    dependency group: 'ninja.optimistic.test.common', name: 'test-common', version: '0.0.1-SNAPSHOT'
+    dependency group: 'com.googlecode.owasp-java-html-sanitizer', name: 'owasp-java-html-sanitizer', version: '20211018.2'
+    dependencySet(group: 'org.spockframework', version: '2.0-groovy-3.0') {
+      entry 'spock-core'
+      entry 'spock-spring'
+    }
+    dependencySet(group: 'org.mapstruct', version: '1.4.2.Final') {
+      entry 'mapstruct'
+      entry 'mapstruct-processor'
+    }
+    dependencySet(group: 'org.springdoc', version: '1.5.2') {
+      entry 'springdoc-openapi-webflux-ui'
+      entry 'springdoc-openapi-security'
+    }
+  }
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  implementation 'org.flywaydb:flyway-core'
+  implementation 'org.springframework:spring-jdbc'
+  compileOnly 'org.projectlombok:lombok'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+  runtimeOnly 'io.r2dbc:r2dbc-postgresql'
+  runtimeOnly 'org.postgresql:postgresql'
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+  annotationProcessor 'org.projectlombok:lombok'
+
+  // OpenAPI
+  implementation 'org.springframework.data:spring-data-commons'
+  implementation 'org.springdoc:springdoc-openapi-webflux-ui'
+  implementation 'org.springdoc:springdoc-openapi-security'
+  implementation 'io.springfox:springfox-swagger-common'
+  implementation 'io.swagger:swagger-annotations'
+  implementation 'com.google.code.findbugs:jsr305'
+  implementation 'org.openapitools:jackson-databind-nullable'
+  implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+  // Mapstruct
+  implementation "org.mapstruct:mapstruct"
+  annotationProcessor "org.mapstruct:mapstruct-processor"
+  testAnnotationProcessor "org.mapstruct:mapstruct-processor"
+
+  // HTML Sanitizer
+  implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer'
+
+  // Unit tests
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'io.projectreactor:reactor-test'
+  testImplementation 'org.springframework.security:spring-security-test'
+  testImplementation 'org.testcontainers:junit-jupiter'
+  testImplementation 'org.testcontainers:postgresql'
+  testImplementation 'org.testcontainers:r2dbc'
+  testImplementation 'ninja.optimistic.test.common:test-common'
+
+  // Smoke tests - inherits unit dependencies
+  smokeImplementation 'org.spockframework:spock-core'
+  smokeImplementation 'org.spockframework:spock-spring'
+}
+
+test {
+  useJUnitPlatform()
+
+  testLogging {
+    events 'passed', 'skipped', 'failed'
+  }
+}
+
+jacocoTestReport {
+  afterEvaluate {
+    getClassDirectories().setFrom(files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: jacocoExcludes)
+    }))
+  }
+}
+
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      enabled = true
+      limit {
+        counter = 'CLASS'
+        value = 'TOTALCOUNT'
+        minimum = 0.90
+      }
+    }
+    afterEvaluate {
+      getClassDirectories().setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: jacocoExcludes)
+      }))
+    }
+  }
+}
+
+clean {
+  ["$openapiGeneratedDir"].each {
+    fileTree(it)
+      .exclude('.openapi-generator-ignore')
+      .exclude("node_modules/", "dist/")
+      .visit {
+        delete it.file
+      }
+  }
+}
+
+compileJava {
+  options.compilerArgs << "-Amapstruct.defaultComponentModel=spring"
+}
+
+task smokeTest(type: Test) {
+  useJUnitPlatform()
+  testLogging {
+    events 'passed', 'skipped', 'failed'
+  }
+  description "Run smoke tests"
+  group = "verification"
+  testClassesDirs = sourceSets.smoke.output.classesDirs
+  classpath = sourceSets.smoke.runtimeClasspath
+}
+
+openApiGenerate {
+  inputSpec = "$openapiSpec"
+  outputDir = "$openapiGeneratedDir"
+  generatorName = "spring"
+  additionalProperties = [
+    oas3: "true",
+    hideGenerationTimestamp: "true",
+    disallowAdditionalPropertiesIfNotPresent: "true",
+    dateLibrary: "java8",
+    reactive: "true",
+    basePackage: generatedPackage,
+    apiPackage: generatedApiPackage,
+    modelPackage: generatedModelPackage,
+    configPackage: generatedConfigPackage,
+    sourceFolder: "",
+    developerOrganization: domain,
+    developerOrganizationUrl: url,
+    developerName: name,
+    developerEmail: email,
+    booleanGetterPrefix: "is",
+    useTags: "true",
+    artifactVersion: project.version,
+    artifactId: project.name,
+    groupId: project.group,
+    artifactUrl: gitlabUrl,
+    artifactDescription: projectDescription,
+    scmConnection: gitlabConnection,
+    interfaceOnly: "true",
+    useBeanValidation: "true",
+    performBeanValidation: "true",
+    performBeanValidation: "true",
+    useOptional: "true",
+    serializableModel: "true",
+    additionalModelTypeAnnotations: generatedAdditionalModelTypeAnnotations
+  ]
+}
+
+spotless {
+  java {
+    removeUnusedImports()
+    googleJavaFormat()
+    importOrder 'java', 'javax', '', "${project.group}"
+  }
+
+  groovy {
+    greclipse().configFile('gradle/greclipse.properties')
+  }
+
+  groovyGradle {
+    target '**.gradle'
+    greclipse().configFile('gradle/greclipse.properties')
+  }
+
+  sql {
+    target 'src/*/resources/**/*.sql'
+    dbeaver().configFile("gradle/dbeaver.properties")
+  }
+}
+
+dockerCompose {
+  isRequiredBy(bootRun)
+}
+
+// Task dependencies
+tasks.prepareKotlinBuildScriptModel.dependsOn tasks.spotlessApply
+tasks.build.dependsOn tasks.spotlessApply
+tasks.compileJava.dependsOn tasks.openApiGenerate, tasks.spotlessJavaApply
+tasks.openApiGenerate.dependsOn tasks.clean
+tasks.check.dependsOn tasks.smokeTest
+tasks.smokeTest.dependsOn tasks.spotlessGroovyApply
+tasks.spotlessJava.dependsOn tasks.openApiGenerate
+tasks.jacocoTestReport.dependsOn tasks.test, tasks.smokeTest
+tasks.test.finalizedBy jacocoTestReport
+tasks.smokeTest.finalizedBy jacocoTestReport

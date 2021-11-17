@@ -1,0 +1,76 @@
+debug: true
+
+server:
+  error:
+    include-stacktrace: never
+  port: 8443
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: classpath:keystore/localhost.p12
+    key-store-password: ${LOCALHOST_KEYSTORE_PASSWORD}
+    key-alias: localhost
+    ciphers:
+      - TLS_CHACHA20_POLY1305_SHA256
+      - TLS_AES_256_GCM_SHA384
+      - TLS_AES_128_GCM_SHA256
+# Unsupported at this time
+#      - TLS_AES_128_CCM_8_SHA256
+#      - TLS_AES_128_CCM_SHA256
+      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    enabled-protocols:
+      - TLSv1.3
+      - TLSv1.2
+
+springdoc:
+  swagger-ui:
+    url: /v1/openapi.yaml
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  r2dbc:
+    url: r2dbc:postgresql://localhost/optimisticninja
+    username: optimisticninja
+    password: root
+    initialization-mode: always
+  flyway:
+    url: jdbc:postgresql://localhost:5432/optimisticninja
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    baseline-on-migrate: true
+    locations: /db/postgres/common,/db/postgres/dev
+  codec:
+    log-request-details: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://dev-q47yvlx5.us.auth0.com/.well-known/jwks.json
+          issuer-uri: https://dev-q47yvlx5.us.auth0.com/
+
+optimisticninja:
+  jwt:
+    issuer: optimistic.ninja
+    expiration-millis: 900000
+# For testing
+#    expiration-millis: 1000
+    refresh:
+      expiration-millis: 86400000
+
+logging:
+  level:
+# For showing SSL logging
+    #io.netty: DEBUG
+    #reactor.netty: DEBUG
+    #org.springframework.http.server.reactive: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG # for queries
+    io.r2dbc.postgresql.PARAM: DEBUG # for parameters
+    org:
+      springframework:
+        security: DEBUG
