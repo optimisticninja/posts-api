@@ -24,6 +24,7 @@ ext {
   // Source-set directories
   openapiSrcDir = "$rootDir/src/main/openapi"
   openapiGeneratedDir = "${openapiSrcDir}/generated"
+  openapiJsClientGeneratedDir ="$rootDir/clients/javascript"
   unitTestSrcDir = "$rootDir/src/test/unit/java"
   unitTestResourcesDir = "$rootDir/src/test/unit/resources"
   smokeSrcDir = "$rootDir/src/test/smoke/groovy"
@@ -39,7 +40,7 @@ ext {
   gitlabConnection = "scm:git:git@gitlab.com:${gitlabUser}/${project.name}.git".toString()
 
   // OpenAPI Generator variables
-  openapiSpec = "$openapiSrcDir/v1-openapi.yml"
+  openapiSpec = "$rootDir/src/main/resources/v1-openapi.yml"
   generatedPackage = "${project.group}.posts.generated".toString()
   generatedApiPackage = "${generatedPackage}.controller".toString()
   generatedModelPackage = "${generatedPackage}.model".toString()
@@ -110,7 +111,7 @@ dependencyManagement {
       entry 'mapstruct'
       entry 'mapstruct-processor'
     }
-    dependencySet(group: 'org.springdoc', version: '1.5.2') {
+    dependencySet(group: 'org.springdoc', version: '1.5.12') {
       entry 'springdoc-openapi-webflux-ui'
       entry 'springdoc-openapi-security'
     }
@@ -201,7 +202,10 @@ jacocoTestCoverageVerification {
 }
 
 clean {
-  ["$openapiGeneratedDir"].each {
+  [
+    "$openapiGeneratedDir",
+    "$openapiJsClientGeneratedDir"
+  ].each {
     fileTree(it)
       .exclude('.openapi-generator-ignore')
       .exclude("node_modules/", "dist/")
@@ -263,6 +267,19 @@ openApiGenerate {
   ]
 }
 
+task openApiJsClientGenerate(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+  group = "openapi tools"
+  generatorName = "javascript"
+  inputSpec = "$openapiSpec"
+  outputDir = "$openapiJsClientGeneratedDir"
+  additionalProperties = [
+    projectName: "@${gitlabUser}/${project.name}-js-client".toString(),
+    projectVersion: "${project.version}".toString(),
+    usePromises: "true",
+    title: "${project.name} JavaScript client"
+  ]
+}
+
 spotless {
   java {
     removeUnusedImports()
@@ -286,6 +303,7 @@ spotless {
 }
 
 dockerCompose {
+  startedServices = ['localstack', 'postgres13']
   isRequiredBy(bootRun)
 }
 
