@@ -24,6 +24,7 @@ import ninja.optimistic.api.posts.exception.RestrictedAccessException;
 import ninja.optimistic.api.posts.generated.controller.PostsApi;
 import ninja.optimistic.api.posts.generated.model.CreatePostRequest;
 import ninja.optimistic.api.posts.generated.model.ListPostsResponse;
+import ninja.optimistic.api.posts.generated.model.PostSummary;
 import ninja.optimistic.api.posts.generated.model.UpdatePostRequest;
 import ninja.optimistic.api.posts.mapper.PostMapper;
 import ninja.optimistic.api.posts.model.Post;
@@ -72,8 +73,8 @@ public class PostsController extends AbstractController implements PostsApi {
     }
 
     // Get paged posts and map to resource models
-    Mono<List<ninja.optimistic.api.posts.generated.model.Post>> pagedResources =
-        PaginationUtil.getPaged(foundPosts, page, size).map(postMapper::toResource).collectList();
+    Mono<List<PostSummary>> pagedResources =
+        PaginationUtil.getPaged(foundPosts, page, size).map(postMapper::toSummary).collectList();
 
     // Get pagination metadata
     Mono<Long> nextPage = PaginationUtil.nextPage(foundPosts.count(), page, size);
@@ -81,7 +82,7 @@ public class PostsController extends AbstractController implements PostsApi {
 
     // Build response
     Mono<ListPostsResponse> response =
-        pagedResources.map(posts -> ListPostsResponse.builder().posts(posts).build());
+        pagedResources.map(posts -> ListPostsResponse.builder().postSummaries(posts).build());
     response =
         Mono.zip(response, nextPage)
             .map(tuple -> tuple.getT1().toBuilder().nextPage(tuple.getT2()).build())

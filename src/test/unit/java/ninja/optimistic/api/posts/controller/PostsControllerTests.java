@@ -126,9 +126,10 @@ public class PostsControllerTests {
   @Test
   void whenGetPostsPaged_thenProperPageSize() {
     // Repeated only once because mapping of post creates initial post
-    List<Post> expectedPosts = Flux.just(mapper.toResource(POST)).repeat(1).collectList().block();
+    List<PostSummary> expectedPosts =
+        Flux.just(mapper.toSummary(POST)).repeat(1).collectList().block();
     ListPostsResponse expectedResponse =
-        ListPostsResponse.builder().posts(expectedPosts).nextPage(1l).pageCount(2l).build();
+        ListPostsResponse.builder().postSummaries(expectedPosts).nextPage(1l).pageCount(2l).build();
     Flux<ninja.optimistic.api.posts.model.Post> persistedPosts = Flux.just(POST).repeat(2);
     when(repository.findAll(Sort.by("created").descending())).thenReturn(persistedPosts);
     client

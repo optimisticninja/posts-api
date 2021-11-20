@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import ninja.optimistic.api.posts.generated.model.CreatePostRequest;
+import ninja.optimistic.api.posts.generated.model.PostSummary;
 import ninja.optimistic.api.posts.model.Post;
 
 @Mapper
@@ -15,4 +16,6 @@ public interface PostMapper {
   Post toEntity(CreatePostRequest createPostRequest);
 
   ninja.optimistic.api.posts.generated.model.Post toResource(Post post);
+
+  PostSummary toSummary(Post post);
 }

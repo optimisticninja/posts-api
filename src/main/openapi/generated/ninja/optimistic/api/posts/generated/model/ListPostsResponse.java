@@ -20,9 +20,9 @@ import org.hibernate.validator.constraints.*;
 public class ListPostsResponse implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  @JsonProperty("posts")
+  @JsonProperty("postSummaries")
   @Valid
-  private List<Post> posts = new ArrayList<>();
+  private List<PostSummary> postSummaries = new ArrayList<>();
 
   @JsonProperty("nextPage")
   private Long nextPage;
@@ -30,30 +30,30 @@ public class ListPostsResponse implements Serializable {
   @JsonProperty("pageCount")
   private Long pageCount;
 
-  public ListPostsResponse posts(List<Post> posts) {
-    this.posts = posts;
+  public ListPostsResponse postSummaries(List<PostSummary> postSummaries) {
+    this.postSummaries = postSummaries;
     return this;
   }
 
-  public ListPostsResponse addPostsItem(Post postsItem) {
-    this.posts.add(postsItem);
+  public ListPostsResponse addPostSummariesItem(PostSummary postSummariesItem) {
+    this.postSummaries.add(postSummariesItem);
     return this;
   }
 
   /**
-   * list of posts
+   * list of post summaries
    *
-   * @return posts
+   * @return postSummaries
    */
-  @ApiModelProperty(required = true, value = "list of posts")
+  @ApiModelProperty(required = true, value = "list of post summaries")
   @NotNull
   @Valid
-  public List<Post> getPosts() {
-    return posts;
+  public List<PostSummary> getPostSummaries() {
+    return postSummaries;
   }
 
-  public void setPosts(List<Post> posts) {
-    this.posts = posts;
+  public void setPostSummaries(List<PostSummary> postSummaries) {
+    this.postSummaries = postSummaries;
   }
 
   public ListPostsResponse nextPage(Long nextPage) {
@@ -106,14 +106,14 @@ public class ListPostsResponse implements Serializable {
       return false;
     }
     ListPostsResponse listPostsResponse = (ListPostsResponse) o;
-    return Objects.equals(this.posts, listPostsResponse.posts)
+    return Objects.equals(this.postSummaries, listPostsResponse.postSummaries)
         && Objects.equals(this.nextPage, listPostsResponse.nextPage)
         && Objects.equals(this.pageCount, listPostsResponse.pageCount);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(posts, nextPage, pageCount);
+    return Objects.hash(postSummaries, nextPage, pageCount);
   }
 
   @Override
@@ -121,7 +121,7 @@ public class ListPostsResponse implements Serializable {
     StringBuilder sb = new StringBuilder();
     sb.append("class ListPostsResponse {\n");
 
-    sb.append("    posts: ").append(toIndentedString(posts)).append("\n");
+    sb.append("    postSummaries: ").append(toIndentedString(postSummaries)).append("\n");
     sb.append("    nextPage: ").append(toIndentedString(nextPage)).append("\n");
     sb.append("    pageCount: ").append(toIndentedString(pageCount)).append("\n");
     sb.append("}");

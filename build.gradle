@@ -263,7 +263,8 @@ openApiGenerate {
     performBeanValidation: "true",
     useOptional: "true",
     serializableModel: "true",
-    additionalModelTypeAnnotations: generatedAdditionalModelTypeAnnotations
+    additionalModelTypeAnnotations: generatedAdditionalModelTypeAnnotations,
+    legacyDiscriminatorBehavior: "false"
   ]
 }
 
@@ -310,7 +311,7 @@ dockerCompose {
 // Task dependencies
 tasks.prepareKotlinBuildScriptModel.dependsOn tasks.spotlessApply
 tasks.build.dependsOn tasks.spotlessApply
-tasks.compileJava.dependsOn tasks.openApiGenerate, tasks.spotlessJavaApply
+tasks.compileJava.dependsOn tasks.openApiGenerate, tasks.openApiJsClientGenerate, tasks.spotlessJavaApply
 tasks.openApiGenerate.dependsOn tasks.clean
 tasks.check.dependsOn tasks.smokeTest
 tasks.smokeTest.dependsOn tasks.spotlessGroovyApply

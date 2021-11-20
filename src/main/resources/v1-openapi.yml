@@ -194,26 +194,13 @@ components:
             posts:l:w: modify own posts
             posts:g:w: modify all posts
   schemas:
-    Post:
+    PostSummary:
       properties:
         id:
           description: post id
           format: uuid
           type: string
           example: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        authorId:
-          description: author id
-          type: string
-          example: auth0|6192e1f238dad1006f2e4ce9
-          maxLength: 255
-        created:
-          description: date-time of post creation
-          format: date-time
-          type: string
-        updated:
-          description: date-time of last post update
-          format: date-time
-          type: string
         title:
           description: post title
           type: string
@@ -226,22 +213,45 @@ components:
           example: Configure firewall, Pihole, WireGuard and other services on DD-WRT
           minLength: 1
           maxLength: 200
-        markdown:
-          description: post markdown
-          type: string
-          example: "# This is an H1"
-          minLength: 1
         imageUrl:
           description: image url
           type: string
           format: uri
           example: https://optimistic.ninja/logo.png
+    Post:
+      allOf:
+        - $ref: '#/components/schemas/PostSummary'
+        - type: object
+          properties:
+            authorId:
+              description: author id
+              type: string
+              example: auth0|6192e1f238dad1006f2e4ce9
+              maxLength: 255
+            created:
+              description: date-time of post creation
+              format: date-time
+              type: string
+            updated:
+              description: date-time of last post update
+              format: date-time
+              type: string
+            markdown:
+              description: post markdown
+              type: string
+              example: "# This is an H1"
+              minLength: 1
+          required:
+            - authorId
+            - created
+            - updated
+            - markdown
     ListPostsResponse:
       properties:
-        posts:
-          description: list of posts
+        postSummaries:
+          description: list of post summaries
           items:
-            $ref: "#/components/schemas/Post"
+            $ref: "#/components/schemas/PostSummary"
           type: array
         nextPage:
           description: next page
@@ -254,7 +264,7 @@ components:
           type: integer
           minimum: 1
       required:
-        - posts
+        - postSummaries
         - pageCount
     CreatePostRequest:
       properties:

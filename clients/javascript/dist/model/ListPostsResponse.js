@@ -7,7 +7,7 @@ exports["default"] = void 0;
 
 var _ApiClient = _interopRequireDefault(require("../ApiClient"));
 
-var _Post = _interopRequireDefault(require("./Post"));
+var _PostSummary = _interopRequireDefault(require("./PostSummary"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -26,13 +26,13 @@ var ListPostsResponse = /*#__PURE__*/function () {
   /**
    * Constructs a new <code>ListPostsResponse</code>.
    * @alias module:model/ListPostsResponse
-   * @param posts {Array.<module:model/Post>} list of posts
+   * @param postSummaries {Array.<module:model/PostSummary>} list of post summaries
    * @param pageCount {Number} number of pages
    */
-  function ListPostsResponse(posts, pageCount) {
+  function ListPostsResponse(postSummaries, pageCount) {
     _classCallCheck(this, ListPostsResponse);
 
-    ListPostsResponse.initialize(this, posts, pageCount);
+    ListPostsResponse.initialize(this, postSummaries, pageCount);
   }
   /**
    * Initializes the fields of this object.
@@ -43,8 +43,8 @@ var ListPostsResponse = /*#__PURE__*/function () {
 
   _createClass(ListPostsResponse, null, [{
     key: "initialize",
-    value: function initialize(obj, posts, pageCount) {
-      obj['posts'] = posts;
+    value: function initialize(obj, postSummaries, pageCount) {
+      obj['postSummaries'] = postSummaries;
       obj['pageCount'] = pageCount;
     }
     /**
@@ -61,8 +61,8 @@ var ListPostsResponse = /*#__PURE__*/function () {
       if (data) {
         obj = obj || new ListPostsResponse();
 
-        if (data.hasOwnProperty('posts')) {
-          obj['posts'] = _ApiClient["default"].convertToType(data['posts'], [_Post["default"]]);
+        if (data.hasOwnProperty('postSummaries')) {
+          obj['postSummaries'] = _ApiClient["default"].convertToType(data['postSummaries'], [_PostSummary["default"]]);
         }
 
         if (data.hasOwnProperty('nextPage')) {
@@ -81,12 +81,12 @@ var ListPostsResponse = /*#__PURE__*/function () {
   return ListPostsResponse;
 }();
 /**
- * list of posts
- * @member {Array.<module:model/Post>} posts
+ * list of post summaries
+ * @member {Array.<module:model/PostSummary>} postSummaries
  */
 
 
-ListPostsResponse.prototype['posts'] = undefined;
+ListPostsResponse.prototype['postSummaries'] = undefined;
 /**
  * next page
  * @member {Number} nextPage

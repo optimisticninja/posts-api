@@ -27,6 +27,18 @@ Object.defineProperty(exports, "Post", {
     return _Post["default"];
   }
 });
+Object.defineProperty(exports, "PostAllOf", {
+  enumerable: true,
+  get: function get() {
+    return _PostAllOf["default"];
+  }
+});
+Object.defineProperty(exports, "PostSummary", {
+  enumerable: true,
+  get: function get() {
+    return _PostSummary["default"];
+  }
+});
 Object.defineProperty(exports, "PostUpdateMask", {
   enumerable: true,
   get: function get() {
@@ -53,6 +65,10 @@ var _CreatePostRequest = _interopRequireDefault(require("./model/CreatePostReque
 var _ListPostsResponse = _interopRequireDefault(require("./model/ListPostsResponse"));
 
 var _Post = _interopRequireDefault(require("./model/Post"));
+
+var _PostAllOf = _interopRequireDefault(require("./model/PostAllOf"));
+
+var _PostSummary = _interopRequireDefault(require("./model/PostSummary"));
 
 var _PostUpdateMask = _interopRequireDefault(require("./model/PostUpdateMask"));
 

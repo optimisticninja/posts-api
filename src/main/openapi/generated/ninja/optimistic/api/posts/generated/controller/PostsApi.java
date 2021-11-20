@@ -128,8 +128,7 @@ public interface PostsApi {
     exchange.getResponse().setStatusCode(HttpStatus.NOT_IMPLEMENTED);
     for (MediaType mediaType : exchange.getRequest().getHeaders().getAccept()) {
       if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-        String exampleString =
-            "{ \"summary\" : \"Configure firewall, Pihole, WireGuard and other services on DD-WRT\", \"created\" : \"2000-01-23T04:56:07.000+00:00\", \"imageUrl\" : \"https://optimistic.ninja/logo.png\", \"markdown\" : \"# This is an H1\", \"id\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"authorId\" : \"auth0|6192e1f238dad1006f2e4ce9\", \"title\" : \"Harden your router with DD-WRT\", \"updated\" : \"2000-01-23T04:56:07.000+00:00\" }";
+        String exampleString = "null";
         result = ApiUtil.getExampleResponse(exchange, mediaType, exampleString);
         break;
       }
@@ -177,7 +176,7 @@ public interface PostsApi {
     for (MediaType mediaType : exchange.getRequest().getHeaders().getAccept()) {
       if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
         String exampleString =
-            "{ \"pageCount\" : 1, \"nextPage\" : 1, \"posts\" : [ { \"summary\" : \"Configure firewall, Pihole, WireGuard and other services on DD-WRT\", \"created\" : \"2000-01-23T04:56:07.000+00:00\", \"imageUrl\" : \"https://optimistic.ninja/logo.png\", \"markdown\" : \"# This is an H1\", \"id\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"authorId\" : \"auth0|6192e1f238dad1006f2e4ce9\", \"title\" : \"Harden your router with DD-WRT\", \"updated\" : \"2000-01-23T04:56:07.000+00:00\" }, { \"summary\" : \"Configure firewall, Pihole, WireGuard and other services on DD-WRT\", \"created\" : \"2000-01-23T04:56:07.000+00:00\", \"imageUrl\" : \"https://optimistic.ninja/logo.png\", \"markdown\" : \"# This is an H1\", \"id\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"authorId\" : \"auth0|6192e1f238dad1006f2e4ce9\", \"title\" : \"Harden your router with DD-WRT\", \"updated\" : \"2000-01-23T04:56:07.000+00:00\" } ] }";
+            "{ \"pageCount\" : 1, \"nextPage\" : 1, \"postSummaries\" : [ { \"summary\" : \"Configure firewall, Pihole, WireGuard and other services on DD-WRT\", \"imageUrl\" : \"https://optimistic.ninja/logo.png\", \"id\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"title\" : \"Harden your router with DD-WRT\" }, { \"summary\" : \"Configure firewall, Pihole, WireGuard and other services on DD-WRT\", \"imageUrl\" : \"https://optimistic.ninja/logo.png\", \"id\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\", \"title\" : \"Harden your router with DD-WRT\" } ] }";
         result = ApiUtil.getExampleResponse(exchange, mediaType, exampleString);
         break;
       }

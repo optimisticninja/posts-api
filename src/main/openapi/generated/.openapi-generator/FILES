@@ -3,5 +3,7 @@ ninja/optimistic/api/posts/generated/controller/PostsApi.java
 ninja/optimistic/api/posts/generated/model/CreatePostRequest.java
 ninja/optimistic/api/posts/generated/model/ListPostsResponse.java
 ninja/optimistic/api/posts/generated/model/Post.java
+ninja/optimistic/api/posts/generated/model/PostAllOf.java
+ninja/optimistic/api/posts/generated/model/PostSummary.java
 ninja/optimistic/api/posts/generated/model/PostUpdateMask.java
 ninja/optimistic/api/posts/generated/model/UpdatePostRequest.java
