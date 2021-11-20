@@ -5,4 +5,3 @@ ninja/optimistic/api/posts/generated/model/ListPostsResponse.java
 ninja/optimistic/api/posts/generated/model/Post.java
 ninja/optimistic/api/posts/generated/model/PostUpdateMask.java
 ninja/optimistic/api/posts/generated/model/UpdatePostRequest.java
-pom.xml
