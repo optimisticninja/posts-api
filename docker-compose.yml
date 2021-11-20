@@ -7,7 +7,6 @@ services:
       - docker/postgres/postgres.env
     ports:
       - 5432:5432
-
   pgadmin:
     build:
       dockerfile: Dockerfile
@@ -16,3 +15,15 @@ services:
       - docker/pgadmin/pgadmin.env
     ports:
       - 8484:80
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './aws/:/docker-entrypoint-initaws.d'
