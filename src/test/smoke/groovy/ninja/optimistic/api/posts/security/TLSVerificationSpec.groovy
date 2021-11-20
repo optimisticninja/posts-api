@@ -83,7 +83,7 @@ class TLSVerificationSpec extends BaseServiceSpec {
 
   def "when TLSv1.2 allowed cipher suite used then accepted"() {
     given:
-    def client = getHttpClient(TestConstants.TLSV1_2, List.of("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"))
+    def client = getHttpClient(TestConstants.TLSV1_2, List.of("TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"))
     expect:
     client
       .get()
