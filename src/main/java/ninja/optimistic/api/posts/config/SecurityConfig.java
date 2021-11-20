@@ -1,8 +1,10 @@
 package ninja.optimistic.api.posts.config;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.common.net.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,9 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.session.WebSessionManager;
 import reactor.core.publisher.Mono;
 
@@ -59,6 +64,9 @@ public class SecurityConfig {
         .disable()
         .logout()
         .disable()
+        .cors()
+        .configurationSource(createCorsConfigSource())
+        .and()
         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .oauth2ResourceServer()
         .jwt()
@@ -95,6 +103,25 @@ public class SecurityConfig {
                     () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
               });
     };
+  }
+
+  public CorsConfigurationSource createCorsConfigSource() {
+    org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
+        new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.addAllowedOrigin("http://localhost:3000");
+    config.setAllowedHeaders(
+        List.of(HttpHeaders.CONTENT_TYPE, HttpHeaders.USER_AGENT, HttpHeaders.AUTHORIZATION));
+    config.setAllowedMethods(
+        List.of(
+            HttpMethod.OPTIONS.name(),
+            HttpMethod.GET.name(),
+            HttpMethod.PUT.name(),
+            HttpMethod.POST.name(),
+            HttpMethod.PATCH.name(),
+            HttpMethod.DELETE.name()));
+    source.registerCorsConfiguration("/**", config);
+    return source;
   }
 
   @Bean
